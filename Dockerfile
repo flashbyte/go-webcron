@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY cron.go .
 
+ENV CGO_ENABLED=0
 RUN go build -v cron.go
 
-FROM scratch 
+
+FROM scratch
 
 WORKDIR /
 
