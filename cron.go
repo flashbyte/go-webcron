@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
-	"net/http"
 	"time"
-//	"io"
 )
 
 type Settings struct {
@@ -29,22 +28,33 @@ func parseEnv() (Settings, bool) {
 	}
 
 	if value, exist := os.LookupEnv("TIME"); exist {
-		value, _ := strconv.ParseInt(value, 10, 64) // TODO: Add error handling
+		value, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			fmt.Println("CRITICAL: Could not pare env TIME")
+			return setting, true
+		}
 		setting.time = value
 	}
 
 	if value, exist := os.LookupEnv("DEBUG"); exist {
-		value, _ := strconv.ParseBool(value) // TODO: Add error handling
+		value, err := strconv.ParseBool(value)
+		if err != nil {
+			fmt.Println("CRITICAL: Could not pare env DEBUG")
+			return setting, true
+		}
+
 		setting.debug = value
 	}
 
 	return setting, false
 }
 
-func doRequest(url string){
-	resp, _ := http.Get(url) // TODO: Add error handling
-	//body, _ := io.ReadAll(resp.Body)
-	//resp.Body.Close()
+func doRequest(url string) {
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Printf("ERROR: Cound't get %v\n", url)
+		return
+	}
 	fmt.Printf("GET %v -- %v\n", url, resp.StatusCode)
 }
 
@@ -58,6 +68,6 @@ func main() {
 
 	for true {
 		doRequest(env.url)
-		time.Sleep(time.Duration(env.time) * time.Second) 
+		time.Sleep(time.Duration(env.time) * time.Second)
 	}
 }
