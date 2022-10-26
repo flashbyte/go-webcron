@@ -2,11 +2,17 @@ FROM golang:1.19.2 as build
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y upx
+
 COPY cron.go .
 
-RUN go build -v cron.go
+ENV CGO_ENABLED=0
+RUN go build -ldflags "-s -w" cron.go
 
-FROM scratch 
+RUN upx cron
+
+
+FROM scratch
 
 WORKDIR /
 
