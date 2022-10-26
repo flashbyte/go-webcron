@@ -66,7 +66,7 @@ func main() {
 
 	fmt.Printf("Starting %v with config (URL:%v TIME:%v DEBUG:%v)\n", "go-webcron", env.url, env.time, env.debug)
 
-	for true {
+	for {
 		doRequest(env.url)
 		time.Sleep(time.Duration(env.time) * time.Second)
 	}
